@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiplomaClientApplication", "DiplomaClientApplication.csproj", "{AC6C9F6D-5A35-4FA0-9CDE-176DF77AC6E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiplomaClientApplication", "DiplomaClientApplication.csproj", "{AC6C9F6D-5A35-4FA0-9CDE-176DF77AC6E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Normalization", "..\..\Normalization\Normalization\normalization\Normalization.csproj", "{DD56E325-B00F-497A-A1D6-17FDBA0A659E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectionToCoSyCo", "..\ConnectionToCoSyCo\ConnectionToCoSyCo.csproj", "{1E00B911-EB9C-406B-9E23-C3766A366395}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectionToCoSyCo", "..\..\ConnectionToCoSyCo\ConnectionToCoSyCo\ConnectionToCoSyCo.csproj", "{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Normalization", "..\Normalization\Normalization\Normalization.csproj", "{D771089F-5A93-41B9-A46C-971B19B5DCDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,22 +25,22 @@ Global
 		{AC6C9F6D-5A35-4FA0-9CDE-176DF77AC6E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AC6C9F6D-5A35-4FA0-9CDE-176DF77AC6E4}.Release|x64.ActiveCfg = Release|Any CPU
 		{AC6C9F6D-5A35-4FA0-9CDE-176DF77AC6E4}.Release|x64.Build.0 = Release|Any CPU
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Debug|x64.ActiveCfg = Debug|x64
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Debug|x64.Build.0 = Debug|x64
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Release|x64.ActiveCfg = Release|x64
-		{DD56E325-B00F-497A-A1D6-17FDBA0A659E}.Release|x64.Build.0 = Release|x64
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Debug|x64.ActiveCfg = Debug|x64
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Debug|x64.Build.0 = Debug|x64
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Release|x64.ActiveCfg = Release|x64
-		{4A9F5AAE-9D5E-4A98-9510-6AE7BCB7579A}.Release|x64.Build.0 = Release|x64
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Debug|x64.ActiveCfg = Debug|x64
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Debug|x64.Build.0 = Debug|x64
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Release|x64.ActiveCfg = Release|x64
+		{1E00B911-EB9C-406B-9E23-C3766A366395}.Release|x64.Build.0 = Release|x64
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Debug|x64.ActiveCfg = Debug|x64
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Debug|x64.Build.0 = Debug|x64
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Release|x64.ActiveCfg = Release|x64
+		{D771089F-5A93-41B9-A46C-971B19B5DCDF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

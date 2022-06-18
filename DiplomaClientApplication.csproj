@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ConnectionToCoSyCo\ConnectionToCoSyCo\ConnectionToCoSyCo.csproj" />
-    <ProjectReference Include="..\..\Normalization\Normalization\normalization\Normalization.csproj" />
+    <ProjectReference Include="..\Normalization\Normalization\Normalization.csproj" />
   </ItemGroup>
 
 </Project>
