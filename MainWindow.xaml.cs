@@ -21,6 +21,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using DiplomaClientApplication.Infrastructure.JsonObjects;
 
 namespace DiplomaClientApplication
 {
@@ -171,21 +173,74 @@ namespace DiplomaClientApplication
 
         }
 
+
         private void SaveToJsonButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach(DataGridItemsWithCount t in dataTable.Items)
-            {
-                if(t.Checked)
-                {
-                    var res = cosycoResultSet.Keys.Where(x => x.Verb.Equals(t.Verb)).First();
-                    var ress = cosycoResultSet[res].SelectMany(x => cosycoDictionaryNormForms[x]).ToList();
+            var dlg = new SaveFileDialog();
 
- 
-                    var dlg = new SaveFileDialog();
-                    if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() == true)
+            {
+
+                foreach (DataGridItemsWithCount t in dataTable.Items)
+                {
+                    if (t.Checked)
                     {
-                        var json = JsonConvert.SerializeObject(ress);
-                        File.WriteAllText(dlg.FileName, json, Encoding.UTF8);
+                        var selectedKey = cosycoResultSet.Keys.Where(x => x.Verb.Equals(t.Verb)).First();
+
+                        var treeRoot = new VerbTreeJson();
+
+                        treeRoot.Verb = selectedKey.Verb;
+                        treeRoot.Prep = "";
+                        treeRoot.NounFrequency = selectedKey.NounFrequency;
+                        treeRoot.VerbFrequency = selectedKey.VerbFrequency;
+                        treeRoot.CombinationFrequency = selectedKey.CombinationFrequency;
+                        treeRoot.LogDice = selectedKey.LogDice();
+                        treeRoot.MinimumSensitivity = selectedKey.MinSen();
+
+                        treeRoot.Children = new List<VerbTreeJson>();
+
+                        var index = 0;
+
+                        foreach (var elem in cosycoResultSet[selectedKey])
+                        {
+                            treeRoot.Children.Add(new VerbTreeJson());
+
+                            treeRoot.Children[index].Verb = elem.Verb;
+                            treeRoot.Children[index].Prep = elem.Prep;
+                            treeRoot.Children[index].NounFrequency = elem.NounFrequency;
+                            treeRoot.Children[index].VerbFrequency = elem.VerbFrequency;
+                            treeRoot.Children[index].CombinationFrequency = elem.CombinationFrequency;
+                            treeRoot.Children[index].LogDice = elem.LogDice();
+                            treeRoot.Children[index].MinimumSensitivity = elem.MinSen();
+
+                            var j = 0;
+                            treeRoot.Children[index].Children = new List<VerbTreeJson>();
+
+                            foreach (var node in cosycoDictionaryNormForms[cosycoResultSet[selectedKey].First()])
+                            {
+
+                                treeRoot.Children[index].Children.Add(new VerbTreeJson());
+
+                                treeRoot.Children[index].Children[j].Verb = node.Verb;
+                                treeRoot.Children[index].Children[j].Prep = node.Prep;
+                                treeRoot.Children[index].Children[j].NounFrequency = node.NounFrequency;
+                                treeRoot.Children[index].Children[j].VerbFrequency = node.VerbFrequency;
+                                treeRoot.Children[index].Children[j].CombinationFrequency = node.CombinationFrequency;
+                                treeRoot.Children[index].Children[j].LogDice = node.LogDice();
+                                treeRoot.Children[index].Children[j].MinimumSensitivity = node.MinSen();
+                                j++;
+                            }
+
+                            index++;
+
+                        }
+
+                            var path = System.IO.Path.GetDirectoryName(dlg.FileName);
+
+                            var json = JsonConvert.SerializeObject(treeRoot, Formatting.Indented);
+
+                            File.WriteAllText(path + @"\" + selectedKey.Verb, json, Encoding.UTF8);
+                        
                     }
                 }
             }
