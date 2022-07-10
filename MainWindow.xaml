@@ -32,11 +32,7 @@
             <DataGrid x:Name="dataTable"                  
                       Grid.Column="1" Margin="10,45,149,-331" Grid.RowSpan="2" 
                       SelectionUnit="FullRow" Grid.ColumnSpan="2">
-                <!--<DataGrid.CellStyle>
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="BorderThickness" Value="0"/>
-                    </Style>
-                </DataGrid.CellStyle>-->
+                
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="" FocusManager.IsFocusScope="False">
                         <DataGridTemplateColumn.CellTemplate>
@@ -49,7 +45,7 @@
                     <DataGridTemplateColumn Header="Глагол" FocusManager.IsFocusScope="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding Path=Verb}" Click="Button_Click_1"/>
+                                <Button Content="{Binding Path=Verb}" Click="SelectedVerbButton_Click"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -63,9 +59,9 @@
 
 
 
-            <Button x:Name="button" Grid.Column="2" Content="Показать словосочетания" HorizontalAlignment="Left" VerticalAlignment="Center" Width="151" Click="button_Click" Height="20" Margin="259,0,0,0"/>
-            <Button x:Name="button1" Grid.Column="2" Margin="506,10,10,0" Grid.Row="1" Content="Сохранить в .csv" Click="button1_Click"  VerticalAlignment="Top"/>
-            <Button x:Name="button2" Grid.Column="2" Margin="506,49,10,-39" Grid.Row="1" Click="button2_Click" Content="Сохранить в .json"/>
+            <Button x:Name="ShowCombinationsButton" Grid.Column="2" Content="Показать словосочетания" HorizontalAlignment="Left" VerticalAlignment="Center" Width="151" Click="ShowCombinationsButton_Click" Height="20" Margin="259,0,0,0"/>
+            <Button x:Name="SaveToCsvButton" Grid.Column="2" Margin="506,10,10,0" Grid.Row="1" Content="Сохранить в .csv" Click="SaveToCsvButton_Click"  VerticalAlignment="Top"/>
+            <Button x:Name="SaveToJsonButton" Grid.Column="2" Margin="506,49,10,-39" Grid.Row="1" Click="SaveToJsonButton_Click" Content="Сохранить в .json"/>
 
             <ProgressBar x:Name="progressBar" Grid.Column="2" Minimum="0" Maximum="100" RenderTransformOrigin="0.5,0.5" Margin="511,364,12,-354" Grid.Row="1" Grid.ColumnSpan="2">
                 <ProgressBar.RenderTransform>

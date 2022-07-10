@@ -1,10 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <!--<OutputType>WinExe</OutputType>-->
+    <!--<TargetFramework>net6.0-windows</TargetFramework>-->
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	  <OutputType>Exe</OutputType>
+	  <TargetFramework>net6.0-windows</TargetFramework>
+	  <!--<PublishSingleFile>true</PublishSingleFile>
+	  <SelfContained>true</SelfContained>-->
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConnectionToCoSyCo\ConnectionToCoSyCo.csproj" />
     <ProjectReference Include="..\Normalization\Normalization\Normalization.csproj" />
   </ItemGroup>
 
