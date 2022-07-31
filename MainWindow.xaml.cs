@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using DiplomaClientApplication.Infrastructure.JsonObjects;
+using System.Windows.Threading;
 
 namespace DiplomaClientApplication
 {
@@ -53,7 +54,7 @@ namespace DiplomaClientApplication
             Installer.SetupPython().WaitWithoutException();
             PythonEngine.Initialize();
             
-            //var initialize = MorphAnalyzer.Instance;
+            var initialize = MorphAnalyzer.Instance;
             
             foreach(var noun in nouns)
             {
@@ -63,6 +64,7 @@ namespace DiplomaClientApplication
 
         private async void ShowCombinationsButton_Click(object sender, RoutedEventArgs e)
         {
+
             dataTable.Items.Clear();
             dataTable.Items.Refresh();
 
@@ -74,41 +76,39 @@ namespace DiplomaClientApplication
 
             var crossLexicaPath = @"..\..\..\..\src\CrossLexicaData\InitialFiles\" + noun + ".txt";
 
+           
             await cosyco.Load(noun);
 
             progressBar.Value += 5;
 
-            crossLexica.Load(crossLexicaPath);
+            await Task.Run(() => crossLexica.Load(crossLexicaPath));
 
             progressBar.Value += 5;
 
-            //var normalizedFormsCoSyCo = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => cosyco.NormalizeVerbs(perfectInitialVerbsDict));
-            var normalizedFormsCoSyCo = cosyco.NormalizeVerbs(perfectInitialVerbsDict);
+            DoEvents();
+
+            var normalizedFormsCoSyCo = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => cosyco.NormalizeVerbs(perfectInitialVerbsDict));
 
             progressBar.Value += 20;
 
-            //var cosycoWithoutPreposition = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => normalizedFormsCoSyCo.CompressVerbsWithoutPreposition());
-            var cosycoWithoutPreposition = normalizedFormsCoSyCo.CompressVerbsWithoutPreposition();
+            var cosycoWithoutPreposition = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => normalizedFormsCoSyCo.CompressVerbsWithoutPreposition());
+
             progressBar.Value += 20;
 
             cosycoDictionaryNormForms = normalizedFormsCoSyCo.ToDictionary(x => x.Key, x => x.Value);
             cosycoResultSet = cosycoWithoutPreposition.ToDictionary(x => x.Key, x => x.Value);
 
-            //var normalizedFromsCrossLexica = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => crossLexica.NormalizeVerbs(perfectInitialVerbsDict));
-            var normalizedFromsCrossLexica = crossLexica.NormalizeVerbs(perfectInitialVerbsDict);
+            var normalizedFromsCrossLexica = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => crossLexica.NormalizeVerbs(perfectInitialVerbsDict));
 
             progressBar.Value += 20;
             
-            //var crossLexicaWithoutPreposition = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => normalizedFromsCrossLexica.CompressVerbsWithoutPreposition());
-            var crossLexicaWithoutPreposition = normalizedFromsCrossLexica.CompressVerbsWithoutPreposition();
+            var crossLexicaWithoutPreposition = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => normalizedFromsCrossLexica.CompressVerbsWithoutPreposition());
 
             progressBar.Value += 20;
 
-            //var difference = await Task.Run<IEnumerable<VerbWithFrequencyInfo>>(() => Difference.GetDifferenceOfCoSyCoCrossLexica(cosycoWithoutPreposition.Keys, crossLexicaWithoutPreposition.Keys).Where(x => x.LogDice() > 0)
-            //   .OrderByDescending(x => x.LogDice()));
+            var difference = await Task.Run<IEnumerable<VerbWithFrequencyInfo>>(() => Difference.GetDifferenceOfCoSyCoCrossLexica(cosycoWithoutPreposition.Keys, crossLexicaWithoutPreposition.Keys).Where(x => x.LogDice() > 0)
+               .OrderByDescending(x => x.LogDice()));
 
-            var difference = Difference.GetDifferenceOfCoSyCoCrossLexica(cosycoWithoutPreposition.Keys, crossLexicaWithoutPreposition.Keys).Where(x => x.LogDice() > 0)
-               .OrderByDescending(x => x.LogDice());
 
             progressBar.Value += 10;
 
@@ -132,6 +132,12 @@ namespace DiplomaClientApplication
                 }
             });  
             
+        }
+
+        private static void DoEvents()
+        {
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                  new Action(delegate { }));
         }
 
         private void SelectedVerbButton_Click(object sender, RoutedEventArgs e)
@@ -173,10 +179,23 @@ namespace DiplomaClientApplication
 
         }
 
+        private void FillNode<T>(T node, VerbWithFrequencyInfo verb)
+            where T : VerbNode
+        {
+            node.Verb = verb.Verb;
+            node.Prep = verb.Prep;
+            node.NounFrequency = verb.NounFrequency;
+            node.VerbFrequency = verb.VerbFrequency;
+            node.CombinationFrequency = verb.CombinationFrequency;
+            node.LogDice = Math.Round(verb.LogDice(),8);
+            node.MinimumSensitivity = Math.Round(verb.MinSen());
+        }
+
 
         private void SaveToJsonButton_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new SaveFileDialog();
+            dlg.Title = "Выберите директорию";
 
             if (dlg.ShowDialog() == true)
             {
@@ -187,47 +206,31 @@ namespace DiplomaClientApplication
                     {
                         var selectedKey = cosycoResultSet.Keys.Where(x => x.Verb.Equals(t.Verb)).First();
 
-                        var treeRoot = new VerbTreeJson();
+                        var treeRoot = new VerbTreeJson<VerbTreeJson<VerbNode>>();
 
-                        treeRoot.Verb = selectedKey.Verb;
-                        treeRoot.Prep = "";
-                        treeRoot.NounFrequency = selectedKey.NounFrequency;
-                        treeRoot.VerbFrequency = selectedKey.VerbFrequency;
-                        treeRoot.CombinationFrequency = selectedKey.CombinationFrequency;
-                        treeRoot.LogDice = selectedKey.LogDice();
-                        treeRoot.MinimumSensitivity = selectedKey.MinSen();
+                        FillNode<VerbTreeJson<VerbTreeJson<VerbNode>>>(treeRoot, selectedKey);
 
-                        treeRoot.Children = new List<VerbTreeJson>();
+                        treeRoot.Children = new List<VerbTreeJson<VerbNode>>();
 
                         var index = 0;
 
-                        foreach (var elem in cosycoResultSet[selectedKey])
+                        foreach (var normilizedVerb in cosycoResultSet[selectedKey])
                         {
-                            treeRoot.Children.Add(new VerbTreeJson());
+                            treeRoot.Children.Add(new VerbTreeJson<VerbNode>());
 
-                            treeRoot.Children[index].Verb = elem.Verb;
-                            treeRoot.Children[index].Prep = elem.Prep;
-                            treeRoot.Children[index].NounFrequency = elem.NounFrequency;
-                            treeRoot.Children[index].VerbFrequency = elem.VerbFrequency;
-                            treeRoot.Children[index].CombinationFrequency = elem.CombinationFrequency;
-                            treeRoot.Children[index].LogDice = elem.LogDice();
-                            treeRoot.Children[index].MinimumSensitivity = elem.MinSen();
+                            FillNode<VerbTreeJson<VerbNode>>(treeRoot.Children[index], normilizedVerb);
 
                             var j = 0;
-                            treeRoot.Children[index].Children = new List<VerbTreeJson>();
 
-                            foreach (var node in cosycoDictionaryNormForms[cosycoResultSet[selectedKey].First()])
+                            treeRoot.Children[index].Children = new List<VerbNode>();
+
+                            foreach (var initialVerb in cosycoDictionaryNormForms[cosycoResultSet[selectedKey].First()])
                             {
 
-                                treeRoot.Children[index].Children.Add(new VerbTreeJson());
+                                treeRoot.Children[index].Children.Add(new VerbNode());
 
-                                treeRoot.Children[index].Children[j].Verb = node.Verb;
-                                treeRoot.Children[index].Children[j].Prep = node.Prep;
-                                treeRoot.Children[index].Children[j].NounFrequency = node.NounFrequency;
-                                treeRoot.Children[index].Children[j].VerbFrequency = node.VerbFrequency;
-                                treeRoot.Children[index].Children[j].CombinationFrequency = node.CombinationFrequency;
-                                treeRoot.Children[index].Children[j].LogDice = node.LogDice();
-                                treeRoot.Children[index].Children[j].MinimumSensitivity = node.MinSen();
+                                FillNode<VerbNode>(treeRoot.Children[index].Children[j], initialVerb);
+
                                 j++;
                             }
 

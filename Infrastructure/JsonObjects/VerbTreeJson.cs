@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace DiplomaClientApplication.Infrastructure.JsonObjects
 {
-    public class VerbTreeJson:VerbNode
+    public class VerbTreeJson<T>:VerbNode 
+        where T:VerbNode
     {
-        public List<VerbTreeJson> Children { get; set; }
+        public List<T> Children { get; set; }
     }
 }
