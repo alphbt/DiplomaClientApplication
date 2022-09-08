@@ -4,10 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiplomaClientApplication"
-        mc:Ignorable="d" Height="450" Width="800" Closed="Window_Closed">
+        mc:Ignorable="d" 
+        MinHeight="450" 
+        MinWidth="800"
+        Height="450"
+        Width="800"
+        Closed="Window_Closed">
 
     <Border Background="AliceBlue">
-        <Grid VirtualizingStackPanel.VirtualizationMode="Standard" Height="434" VerticalAlignment="Top">
+        <Grid VirtualizingStackPanel.VirtualizationMode="Standard" 
+              Height="434" 
+              VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="41*" />
                 <ColumnDefinition Width="584*"/>
@@ -26,21 +33,27 @@
                       Margin="10,0,0,0"
                       IsEditable="True" 
                       HorizontalAlignment="Left" 
-                      Width="256" Height="24" 
-                      VerticalAlignment="Center" Grid.Column="1"/>
+                      Width="256" 
+                      Height="24" 
+                      VerticalAlignment="Center" 
+                      Grid.Column="1"/>
 
 
             <DataGrid x:Name="dataTable" 
                       Margin="10,4,36,5" 
                       SelectionUnit="FullRow"
                       Grid.Row="1" 
-                      Width="Auto" Height="Auto" Grid.Column="1">
+                      Width="Auto" 
+                      Height="Auto" 
+                      Grid.Column="1">
 
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="" FocusManager.IsFocusScope="False">
+                    <DataGridTemplateColumn 
+                        Header="" 
+                        FocusManager.IsFocusScope="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=Checked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <CheckBox IsChecked="{Binding Path=Checked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsHitTestVisible="False" Focusable="False"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -53,10 +66,10 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="log-Dice"  CanUserSort="True" Binding="{Binding Path=LogDice}"/>
-                    <DataGridTextColumn Header="minSen" CanUserSort="True" Binding="{Binding Path=MinSen}"/>
-                    <DataGridTextColumn Header="Кол-во" Binding="{Binding Path=Count}"/>
-                    <DataGridTextColumn Header="Выбрано" Binding="{Binding Path=Selected}"/>
+                    <DataGridTextColumn Header="log-Dice"  CanUserSort="True" Binding="{Binding Path=LogDice}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="minSen" CanUserSort="True" Binding="{Binding Path=MinSen}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Кол-во" Binding="{Binding Path=Count}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Выбрано" Binding="{Binding Path=Selected}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
 
@@ -72,7 +85,10 @@
                          Maximum="100" 
                          RenderTransformOrigin="0.5,0.5" 
                          HorizontalAlignment="Center"
-                         Width="156" Grid.Row="2" Height="18" VerticalAlignment="Center">
+                         Width="156" 
+                         Grid.Row="2" 
+                         Height="18" 
+                         VerticalAlignment="Center">
                 <ProgressBar.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>

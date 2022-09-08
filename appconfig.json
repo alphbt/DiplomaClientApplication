@@ -1,0 +1,10 @@
+{
+  "Config": {
+    "PathToDictionary": "../../../../src/CrossLexicaData/PerfectVerbs/perfectVerbs.csv",
+    "PathToCrossLexica": "../../../../src/CrossLexicaData/InitialFiles/",
+    "PythonDll": "..\\..\\..\\..\\python-3.10.0-embed-amd64",
+    "InstallingPipPath": "..\\..\\..\\..\\",
+    "InstallingPipDirectory": "python-3.10.0-embed-amd64"
+  }
+}
+  

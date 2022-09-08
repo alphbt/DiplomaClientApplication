@@ -23,10 +23,10 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Глагол" CanUserSort="True" Binding="{Binding Path=Verb}"/>
-                <DataGridTextColumn Header="Предлог" CanUserSort="True" Binding="{Binding Path=Prep}"/>
-                <DataGridTextColumn Header="log-Dice"  CanUserSort="True" Binding="{Binding Path=LogDice}"/>
-                <DataGridTextColumn Header="minSen" CanUserSort="True" Binding="{Binding Path=MinSen}"/>
+                <DataGridTextColumn Header="Глагол" CanUserSort="True" Binding="{Binding Path=Verb}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Предлог" CanUserSort="True" Binding="{Binding Path=Prep}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="log-Dice"  CanUserSort="True" Binding="{Binding Path=LogDice}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="minSen" CanUserSort="True" Binding="{Binding Path=MinSen}" IsReadOnly="True"/>
 
 
             </DataGrid.Columns>

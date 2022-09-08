@@ -22,8 +22,6 @@ namespace DiplomaClientApplication
     {
         private Dictionary<string, List<Pair<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>> selectedWords;
 
-        //private static readonly ObjectCache cache = MemoryCache.Default;
-
         public event DataSentHandler dataSent;
 
         private int count = 0;
@@ -31,14 +29,6 @@ namespace DiplomaClientApplication
         private string noun;
 
         private VerbWithFrequencyInfo verb;
-
-        //private SelectValues()
-        //{
-        //    if (!cache.Contains(nameof(selectedWords)))
-        //    {
-        //        cache.Add(nameof(selectedWords), new HashSet<string>(), new CacheItemPolicy());                 
-        //    }
-        //}
 
         public SelectValues(Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>> cosycoDictionaryNormForms,
             Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>> cosycoResultSet,
@@ -51,7 +41,6 @@ namespace DiplomaClientApplication
             verb = cosycoResultSet.Keys.Where(x => x.Verb.Equals(selectedVerb)).First();
             var ress = cosycoResultSet[verb].SelectMany(x => cosycoDictionaryNormForms[x]).ToList();
 
-            //selectedWords = cache[nameof(selectedWords)] as HashSet<string>;
 
             foreach (var e in ress)
             {
@@ -90,23 +79,23 @@ namespace DiplomaClientApplication
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            //selectedWords = cache[nameof(selectedWords)] as HashSet<string>;
             var dataContext = (sender as CheckBox)?.DataContext as DataGridItems;
 
             var k = selectedWords[noun].Where(x => x.First.Equals(verb)).FirstOrDefault();
 
             var selectVerb = new VerbWithFrequencyInfo() { Verb = dataContext.Verb, Prep = dataContext.Prep };
 
+            
             if (!k.Second.Contains(selectVerb))
             {
                 k.Second.Add(selectVerb);
                 count++;
             }
+
         }
 
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            //selectedWords = cache[nameof(selectedWords)] as HashSet<string>;
             var dataContext = (sender as CheckBox)?.DataContext as DataGridItems;
 
             var k = selectedWords[noun].Where(x => x.First.Equals(verb)).FirstOrDefault();

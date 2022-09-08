@@ -24,6 +24,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using DiplomaClientApplication.Infrastructure.JsonObjects;
 using System.Windows.Threading;
+using Microsoft.Extensions.Options;
+using DiplomaClientApplication.Infrastructure;
 
 namespace DiplomaClientApplication
 {
@@ -46,92 +48,141 @@ namespace DiplomaClientApplication
 
         private int cnt = 0;
 
-        public MainWindow()
-        {
-            InitializeComponent();        
-            nounDropDownList.ItemsSource = nouns;
+        private readonly MyConfig config;
 
-            Installer.SetupPython().WaitWithoutException();
-            PythonEngine.Initialize();
-            
-            var initialize = MorphAnalyzer.Instance;
-            
-            foreach(var noun in nouns)
+        public MainWindow(IOptions<MyConfig> config)
+        {
+            try
             {
-                savedWords.Add(noun, new List<Pair<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>());
+                //Console.WriteLine("Config");
+                this.config = config.Value;
+
+                //Console.WriteLine("Start initializing components in a window");
+
+                InitializeComponent();
+
+                //Console.WriteLine("End initializing");
+
+                nounDropDownList.ItemsSource = nouns;                
+
+                //Console.WriteLine("Start to Set environment");
+
+                //Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", this.config.PythonDll);
+
+                Installer.InstallPath = this.config.InstallingPipPath;
+                Installer.InstallDirectory = this.config.InstallingPipDirectory;
+
+                //Console.WriteLine("end to set environment");
+
+                //Console.WriteLine("SetUp python");
+
+                Installer.SetupPython();
+
+                //Console.WriteLine("SetUp finished");
+
+                //Console.WriteLine("Engine initialization started");
+
+                PythonEngine.Initialize();
+
+                //Console.WriteLine("Engine initialization finished");
+
+                var initialize = MorphAnalyzer.Instance;
+
+                foreach (var noun in nouns)
+                {
+                    savedWords.Add(noun, new List<Pair<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>());
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
         private async void ShowCombinationsButton_Click(object sender, RoutedEventArgs e)
         {
+            ShowCombinationsButton.IsEnabled = false;
 
             dataTable.Items.Clear();
             dataTable.Items.Refresh();
 
             progressBar.Value = 0;
 
-            var noun = nounDropDownList.SelectedValue.ToString().ToUpper();
-
-            perfectInitialVerbsDict = InitialPerfectVerbs.ReadVerbPairsFromCsv(@"..\..\..\..\src\CrossLexicaData\PerfectVerbs\perfectVerbs.csv");
-
-            var crossLexicaPath = @"..\..\..\..\src\CrossLexicaData\InitialFiles\" + noun + ".txt";
-
-           
-            await cosyco.Load(noun);
-
-            progressBar.Value += 5;
-
-            await Task.Run(() => crossLexica.Load(crossLexicaPath));
-
-            progressBar.Value += 5;
-
-            DoEvents();
-
-            var normalizedFormsCoSyCo = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => cosyco.NormalizeVerbs(perfectInitialVerbsDict));
-
-            progressBar.Value += 20;
-
-            var cosycoWithoutPreposition = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => normalizedFormsCoSyCo.CompressVerbsWithoutPreposition());
-
-            progressBar.Value += 20;
-
-            cosycoDictionaryNormForms = normalizedFormsCoSyCo.ToDictionary(x => x.Key, x => x.Value);
-            cosycoResultSet = cosycoWithoutPreposition.ToDictionary(x => x.Key, x => x.Value);
-
-            var normalizedFromsCrossLexica = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => crossLexica.NormalizeVerbs(perfectInitialVerbsDict));
-
-            progressBar.Value += 20;
-            
-            var crossLexicaWithoutPreposition = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => normalizedFromsCrossLexica.CompressVerbsWithoutPreposition());
-
-            progressBar.Value += 20;
-
-            var difference = await Task.Run<IEnumerable<VerbWithFrequencyInfo>>(() => Difference.GetDifferenceOfCoSyCoCrossLexica(cosycoWithoutPreposition.Keys, crossLexicaWithoutPreposition.Keys).Where(x => x.LogDice() > 0)
-               .OrderByDescending(x => x.LogDice()));
-
-
-            progressBar.Value += 10;
-
-
-            Dispatcher.Invoke(() =>
+            try
             {
-                foreach (var comb in difference)
-                {
-                    cnt += cosycoWithoutPreposition[comb].Select(x => normalizedFormsCoSyCo[x].Count).Sum();
 
-                    dataTable.Items.Add(new DataGridItemsWithCount()
+                var noun = nounDropDownList.SelectedValue.ToString().ToUpper();
+
+                perfectInitialVerbsDict = InitialPerfectVerbs.ReadVerbPairsFromCsv(config.PathToDictionary);
+
+                var crossLexicaPath = config.PathToCrossLexica + noun + ".txt";
+
+                await cosyco.Load(noun);
+
+
+                progressBar.Value += 5;
+
+                await Task.Run(() => crossLexica.Load(crossLexicaPath));
+
+                progressBar.Value += 5;
+
+                DoEvents();
+
+                var normalizedFormsCoSyCo = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => cosyco.NormalizeVerbs(perfectInitialVerbsDict));
+
+                progressBar.Value += 20;
+
+                var cosycoWithoutPreposition = await Task.Run<Dictionary<VerbWithFrequencyInfo, HashSet<VerbWithFrequencyInfo>>>(() => normalizedFormsCoSyCo.CompressVerbsWithoutPreposition());
+
+                progressBar.Value += 20;
+
+                cosycoDictionaryNormForms = normalizedFormsCoSyCo.ToDictionary(x => x.Key, x => x.Value);
+                cosycoResultSet = cosycoWithoutPreposition.ToDictionary(x => x.Key, x => x.Value);
+
+                var normalizedFromsCrossLexica = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => crossLexica.NormalizeVerbs(perfectInitialVerbsDict));
+
+                progressBar.Value += 20;
+
+                var crossLexicaWithoutPreposition = await Task.Run<Dictionary<VerbInfo, HashSet<VerbInfo>>>(() => normalizedFromsCrossLexica.CompressVerbsWithoutPreposition());
+
+                progressBar.Value += 20;
+
+                var difference = await Task.Run<IEnumerable<VerbWithFrequencyInfo>>(() => Difference.GetDifferenceOfCoSyCoCrossLexica(cosycoWithoutPreposition.Keys, crossLexicaWithoutPreposition.Keys).Where(x => x.LogDice() > 0)
+                   .OrderByDescending(x => x.LogDice()));
+
+
+                progressBar.Value += 10;
+
+
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (var comb in difference)
                     {
-                        Checked = false,
-                        Verb = comb.Verb,
-                        Prep = "",
-                        LogDice = Math.Round(comb.LogDice(), 8),
-                        MinSen = Math.Round(comb.MinSen(), 8),
-                        Count = cosycoWithoutPreposition[comb].Select(x => normalizedFormsCoSyCo[x].Count).Sum(),
-                        Selected = 0
-                    });
-                }
-            });  
-            
+                        cnt += cosycoWithoutPreposition[comb].Select(x => normalizedFormsCoSyCo[x].Count).Sum();
+
+                        dataTable.Items.Add(new DataGridItemsWithCount()
+                        {
+                            Checked = false,
+                            Verb = comb.Verb,
+                            Prep = "",
+                            LogDice = Math.Round(comb.LogDice(), 8),
+                            MinSen = Math.Round(comb.MinSen(), 8),
+                            Count = cosycoWithoutPreposition[comb].Select(x => normalizedFormsCoSyCo[x].Count).Sum(),
+                            Selected = 0
+                        });
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Проверьте подключение к сети.", "Error", MessageBoxButton.OK);
+            }
+            finally
+            {
+                ShowCombinationsButton.IsEnabled = true;
+                progressBar.Value = 0;
+            }
+
         }
 
         private static void DoEvents()
@@ -162,19 +213,27 @@ namespace DiplomaClientApplication
 
         private void SaveToCsvButton_Click(object sender, RoutedEventArgs e)
         {
-            var noun = nounDropDownList.SelectedValue.ToString();
-
-            var selectedItems = savedWords[noun].Select(x => x.Second).First();
-            var allItems = savedWords[noun].Select(x => cosycoResultSet[x.First]).First().SelectMany(x => cosycoDictionaryNormForms[x]);
-
-            var intersection = allItems.Intersect<VerbWithFrequencyInfo>(selectedItems, new VerbsComparer()).ToList();
-            
-            var dlg = new SaveFileDialog();
-
-            if(dlg.ShowDialog() == true)
+            try
             {
-                var csvFile = CsvSerializer.SerializeToCsv(intersection);
-                File.WriteAllText(dlg.FileName, csvFile, Encoding.UTF8);
+                var noun = nounDropDownList.SelectedValue.ToString();
+
+                var selectedItems = savedWords[noun].SelectMany(x => x.Second);
+                var allItems = savedWords[noun].SelectMany(x => cosycoResultSet[x.First]).SelectMany(x => cosycoDictionaryNormForms[x]);
+
+                var intersection = allItems.Intersect<VerbWithFrequencyInfo>(selectedItems, new VerbsComparer()).ToList();
+
+                var dlg = new SaveFileDialog();
+
+                if (dlg.ShowDialog() == true)
+                {
+                    var csvFile = CsvSerializer.SerializeToCsv(intersection);
+                    dlg.DefaultExt = "csv";
+                    File.WriteAllText(dlg.FileName, csvFile, Encoding.UTF8);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Выберете словосочетания", "Error", MessageBoxButton.OK);
             }
 
         }
@@ -197,7 +256,15 @@ namespace DiplomaClientApplication
             var dlg = new SaveFileDialog();
             dlg.Title = "Выберите директорию";
 
-            if (dlg.ShowDialog() == true)
+            string dummyFileName = "Save Here";
+
+            dlg.FileName = dummyFileName;
+
+            if (dataTable.Items.IsEmpty)
+            {
+                MessageBox.Show("Выберите слово и словосочетание", "Error", MessageBoxButton.OK);
+            }
+            else if (dlg.ShowDialog() == true)
             {
 
                 foreach (DataGridItemsWithCount t in dataTable.Items)
@@ -238,11 +305,11 @@ namespace DiplomaClientApplication
 
                         }
 
-                            var path = System.IO.Path.GetDirectoryName(dlg.FileName);
+                        var path = System.IO.Path.GetDirectoryName(dlg.FileName);
 
-                            var json = JsonConvert.SerializeObject(treeRoot, Formatting.Indented);
+                        var json = JsonConvert.SerializeObject(treeRoot, Formatting.Indented);
 
-                            File.WriteAllText(path + @"\" + selectedKey.Verb, json, Encoding.UTF8);
+                        File.WriteAllText(path + @"\" + selectedKey.Verb, json, Encoding.UTF8);
                         
                     }
                 }
